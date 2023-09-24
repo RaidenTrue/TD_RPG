@@ -1,7 +1,7 @@
 // Copyright by Savvas JRD - LTD Cyprus
 
 
-#include "RpgBaseCharacter.h"
+#include "Character/RpgBaseCharacter.h"
 
 // Sets default values
 ARpgBaseCharacter::ARpgBaseCharacter()
