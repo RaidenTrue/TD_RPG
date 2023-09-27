@@ -14,6 +14,11 @@ ARpgBaseCharacter::ARpgBaseCharacter()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+UAbilitySystemComponent* ARpgBaseCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 // Called when the game starts or when spawned
 void ARpgBaseCharacter::BeginPlay()
 {
