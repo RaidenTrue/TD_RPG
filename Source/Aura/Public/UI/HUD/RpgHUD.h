@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "RpgHUD.generated.h"
 
+class URpgUserWidget;
+
 /**
  * 
  */
@@ -14,4 +16,18 @@ class AURA_API ARpgHUD : public AHUD
 {
 	GENERATED_BODY()
 	
+public:
+
+	UPROPERTY()
+	TObjectPtr<URpgUserWidget> OverlayWidget;
+
+protected:
+
+	virtual void BeginPlay() override;
+
+private:
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URpgUserWidget> OverlayWidgetClass;
+
 };
