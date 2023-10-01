@@ -3,10 +3,15 @@
 
 #include "Character/RpgCharacter.h"
 #include "Camera/CameraComponent.h"
+
 #include "Player/RpgPlayerState.h"
+#include "Player/RpgPlayerController.h"
+
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+
+#include "UI/HUD/RpgHUD.h"
 
 ARpgCharacter::ARpgCharacter()
 {
@@ -54,4 +59,12 @@ void ARpgCharacter::InitAbilityActorInfo()
 
 	AbilitySystemComponent = RpgPlayerState->GetAbilitySystemComponent();
 	AttributeSet = RpgPlayerState->GetAttributeSet();
+
+	if (ARpgPlayerController* RpgPlayerController = Cast<ARpgPlayerController>(GetController()))
+	{
+		if (ARpgHUD* RpgHUD = Cast<ARpgHUD>(RpgPlayerController->GetHUD()))
+		{
+			RpgHUD->InitOverlay(RpgPlayerController, RpgPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
 }

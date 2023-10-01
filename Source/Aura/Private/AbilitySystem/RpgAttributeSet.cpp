@@ -6,11 +6,11 @@
 
 URpgAttributeSet::URpgAttributeSet()
 {
-	InitHealth(100.f);
-	InitMaxHealth(150.f);
+	InitHealth(50.f);
+	InitMaxHealth(100.f);
 
 	InitMana(100.f);
-	InitMaxMana(200.f);
+	InitMaxMana(100.f);
 }
 
 void URpgAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

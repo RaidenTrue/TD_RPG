@@ -26,9 +26,10 @@ void ARpgPlayerController::BeginPlay()
 	check(RpgContext);
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
-
-	Subsystem->AddMappingContext(RpgContext, 0);
+	if (Subsystem)
+	{
+		Subsystem->AddMappingContext(RpgContext, 0);
+	}
 
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
