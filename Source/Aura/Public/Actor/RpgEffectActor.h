@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayEffectTypes.h"
 #include "RpgEffectActor.generated.h"
 
 class UGameplayEffect;
+class UAbilitySystemComponent;
 
 UENUM(BlueprintType)
 enum class EEffectApplicationPolicy : uint8
@@ -72,6 +74,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
 	EEffectRemovalPolicy InfiniteEffectRemovalPolicy = EEffectRemovalPolicy::RemoveOnEndOverlap;
 	/* End ENUM Class. */
+
+	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 
 private:
 
