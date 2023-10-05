@@ -31,7 +31,7 @@ protected:
 
 private:
 
-	void InitAbilityActorInfo();
+	virtual void InitAbilityActorInfo() override;
 
 	TObjectPtr<ARpgPlayerState> PlayerState;
 

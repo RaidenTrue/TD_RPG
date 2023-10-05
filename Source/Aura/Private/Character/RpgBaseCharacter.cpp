@@ -26,6 +26,11 @@ void ARpgBaseCharacter::BeginPlay()
 	
 }
 
+void ARpgBaseCharacter::InitAbilityActorInfo()
+{
+
+}
+
 //// Called every frame
 //void ARpgBaseCharacter::Tick(float DeltaTime)
 //{
