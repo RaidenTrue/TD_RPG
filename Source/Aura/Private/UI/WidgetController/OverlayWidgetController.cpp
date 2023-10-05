@@ -32,13 +32,24 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(RpgAttributeSet->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
 
-	Cast<URpgAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda([](const FGameplayTagContainer& AssetTags)
+	Cast<URpgAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda([this](const FGameplayTagContainer& AssetTags)
 		{
 			for (const FGameplayTag& Tag : AssetTags)
 			{
-				const FString Msg = FString::Printf(TEXT("GE Tag: %s"), *Tag.ToString());
+				/* For example: Tag = Mesasge.HealthPotion */
+				/* "Message.HealthPotion".MatchesTag("Message") will return True, "Message".MatchesTag("Message.HealthPotion") will return False. */
+				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
 
-				GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, Msg);
+				if (Tag.MatchesTag(MessageTag))
+				{
+					const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+
+					MessageWidgetRowDelegate.Broadcast(*Row);
+				}
+
+				/*const FString Msg = FString::Printf(TEXT("GE Tag: %s"), *Tag.ToString());
+
+				GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, Msg);*/
 			}
 		}
 	);
