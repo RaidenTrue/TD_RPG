@@ -8,6 +8,7 @@
 #include "RpgBaseCharacter.generated.h"
 
 class UAttributeSet;
+class UGameplayEffect;
 class UAbilitySystemComponent;
 
 UCLASS()
@@ -37,6 +38,11 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
+	void InitializePrimaryAttributes() const;
 
 //public:	
 //	// Called every frame

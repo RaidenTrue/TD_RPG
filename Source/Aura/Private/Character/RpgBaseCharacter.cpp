@@ -2,6 +2,7 @@
 
 
 #include "Character/RpgBaseCharacter.h"
+#include "AbilitySystemComponent.h"
 
 // Sets default values
 ARpgBaseCharacter::ARpgBaseCharacter()
@@ -29,6 +30,19 @@ void ARpgBaseCharacter::BeginPlay()
 void ARpgBaseCharacter::InitAbilityActorInfo()
 {
 
+}
+
+void ARpgBaseCharacter::InitializePrimaryAttributes() const
+{
+	check(IsValid(GetAbilitySystemComponent()));
+
+	check(DefaultPrimaryAttributes);
+
+	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultPrimaryAttributes, 1.f, ContextHandle);
+
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
 }
 
 //// Called every frame

@@ -69,4 +69,6 @@ void ARpgCharacter::InitAbilityActorInfo()
 			RpgHUD->InitOverlay(RpgPlayerController, RpgPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
+
+	InitializePrimaryAttributes();
 }
