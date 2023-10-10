@@ -9,7 +9,7 @@
 
 URpgAttributeSet::URpgAttributeSet()
 {
-	InitHealth(50.f);
+	InitHealth(10.f);
 	InitMaxHealth(100.f);
 
 	InitMana(50.f);
@@ -40,6 +40,24 @@ void URpgAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 
+	/* Secondary Attributes. */
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, ArmorPenetration, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, CriticalHitChance, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, CriticalHitDamage, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, CriticalHitResistance, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
+
 }
 
 void URpgAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -48,13 +66,13 @@ void URpgAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 
 	if (Attribute == GetHealthAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+		/*NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());*/
 		//UE_LOG(LogTemp, Warning, TEXT("Health: %f,"), NewValue);
 	}
 
 	if (Attribute == GetManaAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
+		/*NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());*/
 		//UE_LOG(LogTemp, Warning, TEXT("Mana: %f"), NewValue);
 	}
 }
@@ -67,16 +85,16 @@ void URpgAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 
 	SetEffectProperties(Data, Props);
 
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
-	{
-		/*GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Health: %f"), GetHealth()));*/
-		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-	}
+	//if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	//{
+	//	/*GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Health: %f"), GetHealth()));*/
+	//	SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	//}
 
-	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	/*if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
-	}
+	}*/
 }
 
 void URpgAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
@@ -163,5 +181,45 @@ void URpgAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
 void URpgAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, MaxMana, OldMaxMana);
+}
+
+void URpgAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, Armor, OldArmor);
+}
+
+void URpgAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, ArmorPenetration, OldArmorPenetration);
+}
+
+void URpgAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, BlockChance, OldBlockChance);
+}
+
+void URpgAttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, CriticalHitChance, OldCriticalHitChance);
+}
+
+void URpgAttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, CriticalHitDamage, OldCriticalHitDamage);
+}
+
+void URpgAttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, CriticalHitResistance, OldCriticalHitResistance);
+}
+
+void URpgAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, HealthRegeneration, OldHealthRegeneration);
+}
+
+void URpgAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, ManaRegeneration, OldManaRegeneration);
 }
 
