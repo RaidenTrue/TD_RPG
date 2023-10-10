@@ -9,11 +9,11 @@
 
 URpgAttributeSet::URpgAttributeSet()
 {
-	InitHealth(10.f);
-	InitMaxHealth(100.f);
+	/*InitHealth(10.f);*/
+	/*InitMaxHealth(100.f);*/
 
-	InitMana(50.f);
-	InitMaxMana(100.f);
+	/*InitMana(50.f);*/
+	/*InitMaxMana(100.f);*/
 }
 
 void URpgAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -34,11 +34,7 @@ void URpgAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, Health, COND_None, REPNOTIFY_Always);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
-
 	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, Mana, COND_None, REPNOTIFY_Always);
-
-	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 
 	/* Secondary Attributes. */
 
@@ -58,6 +54,10 @@ void URpgAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
 
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+
 }
 
 void URpgAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -66,13 +66,13 @@ void URpgAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 
 	if (Attribute == GetHealthAttribute())
 	{
-		/*NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());*/
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
 		//UE_LOG(LogTemp, Warning, TEXT("Health: %f,"), NewValue);
 	}
 
 	if (Attribute == GetManaAttribute())
 	{
-		/*NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());*/
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
 		//UE_LOG(LogTemp, Warning, TEXT("Mana: %f"), NewValue);
 	}
 }
@@ -85,16 +85,16 @@ void URpgAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 
 	SetEffectProperties(Data, Props);
 
-	//if (Data.EvaluatedData.Attribute == GetHealthAttribute())
-	//{
-	//	/*GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Health: %f"), GetHealth()));*/
-	//	SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-	//}
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		/*GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Health: %f"), GetHealth()));*/
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
 
-	/*if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
-	}*/
+	}
 }
 
 void URpgAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const

@@ -48,6 +48,15 @@ void ARpgCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+int32 ARpgCharacter::GetPlayerLevel()
+{
+	const ARpgPlayerState* RpgPlayerState = GetPlayerState<ARpgPlayerState>();
+
+	check(RpgPlayerState);
+
+	return RpgPlayerState->GetPlayerLevel();
+}
+
 void ARpgCharacter::InitAbilityActorInfo()
 {
 	ARpgPlayerState* RpgPlayerState = GetPlayerState<ARpgPlayerState>();
@@ -70,5 +79,5 @@ void ARpgCharacter::InitAbilityActorInfo()
 		}
 	}
 
-	InitializePrimaryAttributes();
+	InitializeDefaultAttributes();
 }

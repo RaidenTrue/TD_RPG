@@ -32,17 +32,28 @@ void ARpgBaseCharacter::InitAbilityActorInfo()
 
 }
 
-void ARpgBaseCharacter::InitializePrimaryAttributes() const
+void ARpgBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const
 {
 	check(IsValid(GetAbilitySystemComponent()));
 
-	check(DefaultPrimaryAttributes);
+	check(GameplayEffectClass);
 
-	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 
-	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultPrimaryAttributes, 1.f, ContextHandle);
+	ContextHandle.AddSourceObject(this);
+
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
 
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
+}
+
+void ARpgBaseCharacter::InitializeDefaultAttributes() const
+{
+	ApplyEffectToSelf(DefaultPrimaryAttributes, 1);
+
+	ApplyEffectToSelf(DefaultSecondaryAttributes, 1);
+
+	ApplyEffectToSelf(DefaultVitalAttributes, 1);
 }
 
 //// Called every frame
