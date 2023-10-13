@@ -3,9 +3,17 @@
 
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
 
+#include "RpgGameplayTags.h"
+
 void URpgAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &URpgAbilitySystemComponent::EffectApplied);
+
+	const FRpgGameplayTags& GameplayTags = FRpgGameplayTags::Get();
+
+	//GameplayTags.Attributes_Secondary_Armor.ToString()
+
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Tag: %s"), *GameplayTags.Attributes_Secondary_Armor.ToString()));
 }
 
 void URpgAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
