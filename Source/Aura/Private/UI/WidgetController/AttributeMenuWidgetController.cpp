@@ -4,13 +4,23 @@
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 
 #include "AbilitySystem/RpgAttributeSet.h"
-#include "RpgGameplayTags.h"
+#include "AbilitySystem/Data/AttributeInfo.h"
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
 	/*Super::BindCallbacksToDependencies();*/
 
-	
+	URpgAttributeSet* AS = CastChecked<URpgAttributeSet>(AttributeSet);
+
+	for (auto& Pair : AS->TagsToAttributes)
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Pair.Value()).AddLambda(
+			[this, Pair](const FOnAttributeChangeData& Data)
+			{
+				BroadcastAttributeInfo(Pair.Key, Pair.Value());
+			}
+		);
+	}
 }
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
@@ -21,9 +31,17 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 
 	check(AttributeInfo);
 
-	FRpgAttributeInfo Info = AttributeInfo->FindAttributeInfoForTag(FRpgGameplayTags::Get().Attributes_Primary_Strength);
+	for (auto& Pair : AS->TagsToAttributes)
+	{
+		BroadcastAttributeInfo(Pair.Key, Pair.Value());
+	}
+}
 
-	Info.AttributeValue = AS->GetStrength();
+void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& AttributeTag, const FGameplayAttribute& Attribute) const
+{
+	FRpgAttributeInfo Info = AttributeInfo->FindAttributeInfoForTag(AttributeTag);
+
+	Info.AttributeValue = Attribute.GetNumericValue(AttributeSet);
 
 	AttributeInfoDelegate.Broadcast(Info);
 }

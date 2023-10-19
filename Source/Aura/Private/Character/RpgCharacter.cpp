@@ -38,6 +38,8 @@ void ARpgCharacter::PossessedBy(AController* NewController)
 
 	/* Init Ability Actor Info for the Server. */
 	InitAbilityActorInfo();
+
+	AddCharacterAbilities();
 }
 
 void ARpgCharacter::OnRep_PlayerState()

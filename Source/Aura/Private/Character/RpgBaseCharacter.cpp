@@ -3,6 +3,7 @@
 
 #include "Character/RpgBaseCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/RpgAbilitySystemComponent.h"
 
 // Sets default values
 ARpgBaseCharacter::ARpgBaseCharacter()
@@ -54,6 +55,15 @@ void ARpgBaseCharacter::InitializeDefaultAttributes() const
 	ApplyEffectToSelf(DefaultSecondaryAttributes, 1);
 
 	ApplyEffectToSelf(DefaultVitalAttributes, 1);
+}
+
+void ARpgBaseCharacter::AddCharacterAbilities()
+{
+	URpgAbilitySystemComponent* RpgASC = CastChecked<URpgAbilitySystemComponent>(AbilitySystemComponent);
+
+	if (!HasAuthority()) { return; }
+
+	RpgASC->AddCharacterAbilities(StartupAbilities);
 }
 
 //// Called every frame
