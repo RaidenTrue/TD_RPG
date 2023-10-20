@@ -4,7 +4,7 @@
 #include "Player/RpgPlayerController.h"
 #include "Interfaces/EnemyInterface.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
+#include "Input/RpgInputComponent.h"
 
 ARpgPlayerController::ARpgPlayerController()
 {
@@ -46,9 +46,14 @@ void ARpgPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	/*UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);*/
 
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARpgPlayerController::Move);
+	URpgInputComponent* RpgInputComponent = CastChecked<URpgInputComponent>(InputComponent);
+
+	RpgInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARpgPlayerController::Move);
+
+	RpgInputComponent->BindAdilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+
 }
 
 void ARpgPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -120,4 +125,19 @@ void ARpgPlayerController::CursorTrace()
 			}
 		}
 	}
+}
+
+void ARpgPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, *InputTag.ToString());
+}
+
+void ARpgPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(2, 10.f, FColor::Green, *InputTag.ToString());
+}
+
+void ARpgPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(3, 10.f, FColor::Blue, *InputTag.ToString());
 }

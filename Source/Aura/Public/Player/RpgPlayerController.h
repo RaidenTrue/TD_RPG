@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
 #include "RpgPlayerController.generated.h"
 
 class UInputAction;
+class URpgInputConfig;
 class UInputMappingContext;
 class IEnemyInterface;
 
@@ -47,4 +49,13 @@ private:
 	TObjectPtr<IEnemyInterface> LastActor;
 
 	TObjectPtr<IEnemyInterface> ThisActor;
+
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	TObjectPtr<URpgInputConfig> InputConfig;
 };
