@@ -9,8 +9,10 @@
 
 class UInputAction;
 class URpgInputConfig;
+class USplineComponent;
 class UInputMappingContext;
 class IEnemyInterface;
+class URpgAbilitySystemComponent;
 
 struct FInputActionValue;
 
@@ -58,4 +60,26 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<URpgInputConfig> InputConfig;
-};
+
+	UPROPERTY()
+	TObjectPtr<URpgAbilitySystemComponent> RpgAbilitySystemComponent;
+
+	URpgAbilitySystemComponent* GetASC();
+
+
+	FVector CachedDestination = FVector::ZeroVector;
+
+	float FollowTime = 0.f;
+
+	float ShortPressThreshold = 0.5f;
+
+	bool bAutoRunning = false;
+
+	bool bTargetting = false;
+
+	UPROPERTY(EditDefaultsOnly)
+	float AutoRunAcceptanceRadius = 50.f;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USplineComponent> Spline;
+ };

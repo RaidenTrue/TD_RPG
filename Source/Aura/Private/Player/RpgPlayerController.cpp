@@ -5,11 +5,19 @@
 #include "Interfaces/EnemyInterface.h"
 #include "EnhancedInputSubsystems.h"
 #include "Input/RpgInputComponent.h"
+#include "Components/SplineComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "RpgGameplayTags.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
+#include "AbilitySystem/RpgAbilitySystemComponent.h"
 
 ARpgPlayerController::ARpgPlayerController()
 {
 	bReplicates = true;
 
+
+	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
 void ARpgPlayerController::PlayerTick(float DeltaTime)
@@ -129,15 +137,112 @@ void ARpgPlayerController::CursorTrace()
 
 void ARpgPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, *InputTag.ToString());
+	if (InputTag.MatchesTagExact(FRpgGameplayTags::Get().InputTag_LMB))
+	{
+		bTargetting = ThisActor ? true : false;
+		bAutoRunning = false;
+	}
+
+	/*GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, *InputTag.ToString());*/
 }
 
 void ARpgPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(2, 10.f, FColor::Green, *InputTag.ToString());
+	/*if (GetASC() == nullptr) { return; }
+
+	GetASC()->AbilityInputTagReleased(InputTag);*/
+
+	if (!InputTag.MatchesTagExact(FRpgGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagReleased(InputTag);
+		}
+
+		return;
+	}
+
+	if (bTargetting)
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagReleased(InputTag);
+		}
+	}
+	else
+	{
+		APawn* ControlledPawn = GetPawn();
+		if (FollowTime <= ShortPressThreshold && ControlledPawn)
+		{
+			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+			{
+				Spline->ClearSplinePoints();
+
+				for (const FVector& PointLoc : NavPath->PathPoints)
+				{
+					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+
+					DrawDebugSphere(GetWorld(), PointLoc, 10.f, 8, FColor::Green, false, 5.f);
+				}
+
+				bAutoRunning = true;
+			}
+		}
+
+		FollowTime = 0.f;
+
+		bTargetting = false;
+	}
+
+	/*GEngine->AddOnScreenDebugMessage(2, 10.f, FColor::Green, *InputTag.ToString());*/
 }
 
 void ARpgPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(3, 10.f, FColor::Blue, *InputTag.ToString());
+	if (!InputTag.MatchesTagExact(FRpgGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagHeld(InputTag);
+		}
+
+		return;
+	}
+
+	if (bTargetting)
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagHeld(InputTag);
+		}
+	}
+	else
+	{
+		FollowTime += GetWorld()->GetDeltaSeconds();
+
+		FHitResult Hit;
+		if (GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, Hit))
+		{
+			CachedDestination = Hit.ImpactPoint;
+		}
+
+		if (APawn* ControlledPawn = GetPawn())
+		{
+			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+
+			ControlledPawn->AddMovementInput(WorldDirection);
+		}
+	}
+
+	/*GEngine->AddOnScreenDebugMessage(3, 10.f, FColor::Blue, *InputTag.ToString());*/
+}
+
+URpgAbilitySystemComponent* ARpgPlayerController::GetASC()
+{
+	if (RpgAbilitySystemComponent == nullptr)
+	{
+		RpgAbilitySystemComponent = Cast<URpgAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	}
+
+	return RpgAbilitySystemComponent;
 }
