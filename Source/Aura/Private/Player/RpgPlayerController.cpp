@@ -16,7 +16,6 @@ ARpgPlayerController::ARpgPlayerController()
 {
 	bReplicates = true;
 
-
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
@@ -25,6 +24,28 @@ void ARpgPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	CursorTrace();
+
+	AutoRun();
+}
+
+void ARpgPlayerController::AutoRun()
+{
+	if (!bAutoRunning) { return; }
+
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
+
+		ControlledPawn->AddMovementInput(Direction);
+
+		const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
+
+		if (DistanceToDestination <= AutoRunAcceptanceRadius)
+		{
+			bAutoRunning = false;
+		}
+	}
 }
 
 void ARpgPlayerController::BeginPlay()
@@ -82,14 +103,19 @@ void ARpgPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void ARpgPlayerController::CursorTrace()
 {
-	FHitResult CursorHit;
-
 	GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, CursorHit);
 
 	if (!CursorHit.bBlockingHit) { return; }
 
 	LastActor = ThisActor;
 	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
+
+	if (LastActor != ThisActor)
+	{
+		if (LastActor) LastActor->UnHighlightActor();
+
+		if (ThisActor) ThisActor->HighlightActor();
+	}
 
 	/* Linetrace from Cursor. There are several Scenarios.
 		A. LastActor is null & ThisActor is also null - Do Nothing.
@@ -99,40 +125,40 @@ void ARpgPlayerController::CursorTrace()
 		E. LastActor is Valid & ThisActor is Valid & both are the same Actor - Do Nothing.
 	*/
 
-	if (LastActor == nullptr)
-	{
-		if (ThisActor != nullptr)
-		{
-			/* Scenario B. */
-			ThisActor->HighlightActor();
-		}
-		else
-		{
-			/* Both are null, Do Nothing - Case A. */
-		}
-	}
+	//if (LastActor == nullptr)
+	//{
+	//	if (ThisActor != nullptr)
+	//	{
+	//		/* Scenario B. */
+	//		ThisActor->HighlightActor();
+	//	}
+	//	else
+	//	{
+	//		/* Both are null, Do Nothing - Case A. */
+	//	}
+	//}
 
-	else /* LastActor is Valid. */
-	{
-		if (ThisActor == nullptr)
-		{
-			/* Scenario C. */
-			LastActor->UnHighlightActor();
-		}
-		else /* Both Actors are Valid. */
-		{
-			if (LastActor != ThisActor)
-			{
-				/* Scenario D. */
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
-			}
-			else
-			{
-				/* Scenario E. */
-			}
-		}
-	}
+	//else /* LastActor is Valid. */
+	//{
+	//	if (ThisActor == nullptr)
+	//	{
+	//		/* Scenario C. */
+	//		LastActor->UnHighlightActor();
+	//	}
+	//	else /* Both Actors are Valid. */
+	//	{
+	//		if (LastActor != ThisActor)
+	//		{
+	//			/* Scenario D. */
+	//			LastActor->UnHighlightActor();
+	//			ThisActor->HighlightActor();
+	//		}
+	//		else
+	//		{
+	//			/* Scenario E. */
+	//		}
+	//	}
+	//}
 }
 
 void ARpgPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
@@ -171,7 +197,7 @@ void ARpgPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 	else
 	{
-		APawn* ControlledPawn = GetPawn();
+		const APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
 			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
@@ -182,9 +208,10 @@ void ARpgPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 				{
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
 
-					DrawDebugSphere(GetWorld(), PointLoc, 10.f, 8, FColor::Green, false, 5.f);
+					//DrawDebugSphere(GetWorld(), PointLoc, 10.f, 8, FColor::Green, false, 5.f);
 				}
 
+				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 				bAutoRunning = true;
 			}
 		}
@@ -220,10 +247,9 @@ void ARpgPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
 
-		FHitResult Hit;
-		if (GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, Hit))
+		if (CursorHit.bBlockingHit)
 		{
-			CachedDestination = Hit.ImpactPoint;
+			CachedDestination = CursorHit.ImpactPoint;
 		}
 
 		if (APawn* ControlledPawn = GetPawn())

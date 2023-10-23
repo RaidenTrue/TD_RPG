@@ -48,6 +48,8 @@ private:
 
 	void CursorTrace();
 
+	FHitResult CursorHit;
+
 	TObjectPtr<IEnemyInterface> LastActor;
 
 	TObjectPtr<IEnemyInterface> ThisActor;
@@ -82,4 +84,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+
+	void AutoRun();
  };
