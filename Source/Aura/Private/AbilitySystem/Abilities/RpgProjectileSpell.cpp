@@ -14,7 +14,7 @@ void URpgProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	/*UKismetSystemLibrary::PrintString(this, FString("ActivateAbility (C++)"), true, true, FLinearColor::Green, 5.f);*/
 }
 
-void URpgProjectileSpell::SpawnProjectile()
+void URpgProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 {
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 
@@ -26,10 +26,13 @@ void URpgProjectileSpell::SpawnProjectile()
 	{
 		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
 
-		FTransform SpawnTransform;
-		SpawnTransform.SetLocation(SocketLocation);
+		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
+		Rotation.Pitch = 0.f;
 
-		/* TODO: Set the Projectile Rotation. */
+		FTransform SpawnTransform;
+
+		SpawnTransform.SetLocation(SocketLocation);
+		SpawnTransform.SetRotation(Rotation.Quaternion());
 
 		ARpgProjectile* Projectile = GetWorld()->SpawnActorDeferred<ARpgProjectile>(
 			ProjectileClass, SpawnTransform,

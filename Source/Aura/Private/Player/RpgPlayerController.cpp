@@ -80,6 +80,8 @@ void ARpgPlayerController::SetupInputComponent()
 	URpgInputComponent* RpgInputComponent = CastChecked<URpgInputComponent>(InputComponent);
 
 	RpgInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARpgPlayerController::Move);
+	RpgInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &ARpgPlayerController::ShiftPressed);
+	RpgInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &ARpgPlayerController::ShiftReleased);
 
 	RpgInputComponent->BindAdilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 
@@ -188,14 +190,12 @@ void ARpgPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		return;
 	}
 
-	if (bTargetting)
+	if (GetASC())
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagReleased(InputTag);
-		}
+		GetASC()->AbilityInputTagReleased(InputTag);
 	}
-	else
+
+	if (!bTargetting && !bShiftKeyDown)
 	{
 		const APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
@@ -220,7 +220,6 @@ void ARpgPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 		bTargetting = false;
 	}
-
 	/*GEngine->AddOnScreenDebugMessage(2, 10.f, FColor::Green, *InputTag.ToString());*/
 }
 
@@ -236,7 +235,7 @@ void ARpgPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 
-	if (bTargetting)
+	if (bTargetting || bShiftKeyDown)
 	{
 		if (GetASC())
 		{

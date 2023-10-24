@@ -4,6 +4,7 @@
 #include "RpgAssetManager.h"
 
 #include "RpgGameplayTags.h"
+#include "AbilitySystemGlobals.h"
 
 URpgAssetManager& URpgAssetManager::Get()
 {
@@ -19,4 +20,7 @@ void URpgAssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	FRpgGameplayTags::InitializeNativeGameplayTags();
+
+	/* Required in order to use TargetData! */
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }

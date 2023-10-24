@@ -14,3 +14,4 @@ FVector ICombatInterface::GetCombatSocketLocation()
 {
 	return FVector();
 }
+
