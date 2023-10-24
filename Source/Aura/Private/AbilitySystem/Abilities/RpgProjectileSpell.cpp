@@ -11,7 +11,12 @@ void URpgProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const bool bIsServer = HasAuthority(&ActivationInfo);
+	/*UKismetSystemLibrary::PrintString(this, FString("ActivateAbility (C++)"), true, true, FLinearColor::Green, 5.f);*/
+}
+
+void URpgProjectileSpell::SpawnProjectile()
+{
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 
 	if (!bIsServer) { return; }
 
@@ -36,6 +41,4 @@ void URpgProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 		Projectile->FinishSpawning(SpawnTransform);
 	}
-
-	/*UKismetSystemLibrary::PrintString(this, FString("ActivateAbility (C++)"), true, true, FLinearColor::Green, 5.f);*/
 }
