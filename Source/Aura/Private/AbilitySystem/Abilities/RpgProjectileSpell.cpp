@@ -3,8 +3,10 @@
 
 #include "AbilitySystem/Abilities/RpgProjectileSpell.h"
 
+#include "AbilitySystemComponent.h"
 #include "Actor/RpgProjectile.h"
 #include "Interfaces/CombatInterface.h"
+#include "AbilitySystemBlueprintLibrary.h"
 //#include "Kismet/KismetSystemLibrary.h"
 
 void URpgProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -41,6 +43,11 @@ void URpgProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocatio
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 		/* TODO: Give the Projectile a GameplayEffectSpec for causing Damage. */
+
+		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+
+		Projectile->DamageEffectSpecHandle = SpecHandle;
 
 		Projectile->FinishSpawning(SpawnTransform);
 	}

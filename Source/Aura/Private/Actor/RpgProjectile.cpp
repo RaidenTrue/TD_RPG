@@ -7,6 +7,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Components/AudioComponent.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 
@@ -73,6 +75,11 @@ void ARpgProjectile::OnSphereOverlap(
 
 	if (HasAuthority())
 	{
+		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		{
+			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+		}
+
 		Destroy();
 	}
 	else
