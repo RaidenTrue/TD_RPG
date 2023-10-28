@@ -2,8 +2,11 @@
 
 
 #include "Character/EnemyCharacter.h"
+#include "RpgGameplayTags.h"
 #include "Components/WidgetComponent.h"
 #include "AbilitySystem/RpgAttributeSet.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AbilitySystem/RpgAbilitySystemLibrary.h"
 #include "UI/Widget/RpgUserWidget.h"
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
 #include "Aura/Aura.h"
@@ -52,6 +55,8 @@ void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+
 	InitAbilityActorInfo();
 
 	if (URpgUserWidget* RpgUserWidget = Cast<URpgUserWidget>(HealthBar->GetUserWidgetObject()))
@@ -75,9 +80,21 @@ void AEnemyCharacter::BeginPlay()
 			}
 		);
 
+		AbilitySystemComponent->RegisterGameplayTagEvent(FRpgGameplayTags::Get().Effects_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this,
+			&AEnemyCharacter::HitReactTagChanged
+		);
+
 		OnHealthChanged.Broadcast(RpgAS->GetHealth());
 		OnMaxHealthChanged.Broadcast(RpgAS->GetMaxHealth());
 	}
+}
+
+void AEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }
 
 void AEnemyCharacter::InitAbilityActorInfo()
@@ -87,4 +104,9 @@ void AEnemyCharacter::InitAbilityActorInfo()
 	Cast<URpgAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	InitializeDefaultAttributes();
+}
+
+void AEnemyCharacter::InitializeDefaultAttributes() const
+{
+	URpgAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
 }

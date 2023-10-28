@@ -31,6 +31,11 @@ UAbilitySystemComponent* ARpgBaseCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+UAnimMontage* ARpgBaseCharacter::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
 // Called when the game starts or when spawned
 void ARpgBaseCharacter::BeginPlay()
 {

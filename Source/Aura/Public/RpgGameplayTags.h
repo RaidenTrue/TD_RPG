@@ -66,6 +66,12 @@ public:
 
 	FGameplayTag InputTag_4;
 
+	/* General Attributes. */
+
+	FGameplayTag Damage;
+
+	FGameplayTag Effects_HitReact;
+
 private:
 
 	static FRpgGameplayTags GameplayTags;

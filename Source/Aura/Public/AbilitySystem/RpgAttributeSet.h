@@ -116,6 +116,16 @@ public:
 
 	/* End Vital Property Attributes. */
 
+	/* Begin Meta Attributes. */
+
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(URpgAttributeSet, IncomingDamage);
+
+
+
+	/* End Meta Attributes. */
+
 	/* Begin Secondary Attributes. */
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Player Secondary Attributes")
