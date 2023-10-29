@@ -51,6 +51,13 @@ int32 AEnemyCharacter::GetPlayerLevel()
 	return Level;
 }
 
+void AEnemyCharacter::Killed()
+{
+	SetLifeSpan(LifeSpan);
+
+	Super::Killed();
+}
+
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -58,6 +65,8 @@ void AEnemyCharacter::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 	InitAbilityActorInfo();
+
+	URpgAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
 
 	if (URpgUserWidget* RpgUserWidget = Cast<URpgUserWidget>(HealthBar->GetUserWidgetObject()))
 	{

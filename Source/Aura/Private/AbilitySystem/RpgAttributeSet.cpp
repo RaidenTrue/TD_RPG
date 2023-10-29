@@ -4,6 +4,7 @@
 #include "AbilitySystem/RpgAttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
+#include "Interfaces/CombatInterface.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 #include "RpgGameplayTags.h"
@@ -156,6 +157,23 @@ void URpgAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
 			const bool bFatal = NewHealth <= 0.f;
+
+			if (bFatal)
+			{
+				ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
+
+				if (CombatInterface)
+				{
+					CombatInterface->Killed();
+				}
+			}
+			else
+			{
+				FGameplayTagContainer TagContainer;
+
+				TagContainer.AddTag(FRpgGameplayTags::Get().Effects_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
 		}
 	}
 }

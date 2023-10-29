@@ -49,7 +49,7 @@ void URpgProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocatio
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
 
 		const FRpgGameplayTags GameplayTags = FRpgGameplayTags::Get();
-		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+		const float ScaledDamage = Damage.GetValueAtLevel(50.f);
 
 		/*GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("FireBolt Damage: %f"), ScaledDamage));*/
 

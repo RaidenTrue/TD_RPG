@@ -32,6 +32,8 @@ public:
 	/* Begin Combat Interface. */
 
 	virtual int32 GetPlayerLevel() override;
+	
+	virtual void Killed() override;
 
 	/* End Combat Interface. */
 
@@ -51,6 +53,9 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, Category = Combat)
 	float BaseWalkSpeed = 250.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat)
+	float LifeSpan = 5.f;
 
 protected:
 
