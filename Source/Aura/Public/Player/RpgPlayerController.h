@@ -12,6 +12,7 @@ class URpgInputConfig;
 class USplineComponent;
 class UInputMappingContext;
 class IEnemyInterface;
+class UDamageTextComponent;
 class URpgAbilitySystemComponent;
 
 struct FInputActionValue;
@@ -29,6 +30,9 @@ public:
 	ARpgPlayerController();
 
 	virtual void PlayerTick(float DeltaTime);
+
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
 
 protected:
 
@@ -77,7 +81,6 @@ private:
 
 	URpgAbilitySystemComponent* GetASC();
 
-
 	FVector CachedDestination = FVector::ZeroVector;
 
 	float FollowTime = 0.f;
@@ -95,4 +98,7 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 
 	void AutoRun();
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
  };

@@ -9,9 +9,7 @@
 UModMagMaxHealth::UModMagMaxHealth()
 {
 	VigorDef.AttributeToCapture = URpgAttributeSet::GetVigorAttribute();
-
 	VigorDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-
 	VigorDef.bSnapshot = false;
 
 	RelevantAttributesToCapture.Add(VigorDef);
