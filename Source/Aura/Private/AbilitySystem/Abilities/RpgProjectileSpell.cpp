@@ -46,7 +46,21 @@ void URpgProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocatio
 		/* TODO: Give the Projectile a GameplayEffectSpec for causing Damage. */
 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+
+		TArray<TWeakObjectPtr<AActor>> Actors;
+		Actors.Add(Projectile);
+
+		FHitResult HitResult;
+		HitResult.Location = ProjectileTargetLocation;
+
+		EffectContextHandle.SetAbility(this);
+		EffectContextHandle.AddSourceObject(Projectile);
+		EffectContextHandle.AddActors(Actors);
+
+		EffectContextHandle.AddHitResult(HitResult);
+
+		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 
 		const FRpgGameplayTags GameplayTags = FRpgGameplayTags::Get();
 		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());

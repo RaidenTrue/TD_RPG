@@ -54,14 +54,11 @@ UAttributeMenuWidgetController* URpgAbilitySystemLibrary::GetAttributeMenuWidget
 
 void URpgAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
-	ARpgGameModeBase* RpgGameMode = Cast<ARpgGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-
-	if (RpgGameMode == nullptr) { return; }
 
 	AActor* AvatarActor = ASC->GetAvatarActor();
 
-	UCharacterClassInfo* CharacterClassInfo = RpgGameMode->CharacterClassInfo;
-	FCharacterClassDefaultInfo ClassDefaultInfo = RpgGameMode->CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	FCharacterClassDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
 
 	FGameplayEffectContextHandle PrimaryAttributesContextHandle = ASC->MakeEffectContext();
 	PrimaryAttributesContextHandle.AddSourceObject(AvatarActor);
@@ -84,11 +81,9 @@ void URpgAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldC
 
 void URpgAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
 {
-	ARpgGameModeBase* RpgGameMode = Cast<ARpgGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
 
-	if (RpgGameMode == nullptr) { return; }
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 
-	UCharacterClassInfo* CharacterClassInfo = RpgGameMode->CharacterClassInfo;
 	for (TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->CommonAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
@@ -96,4 +91,13 @@ void URpgAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextO
 		ASC->GiveAbility(AbilitySpec);
 	}
 
+}
+
+UCharacterClassInfo* URpgAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	ARpgGameModeBase* RpgGameMode = Cast<ARpgGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+
+	if (RpgGameMode == nullptr) { return nullptr; }
+
+	return RpgGameMode->CharacterClassInfo;
 }

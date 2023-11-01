@@ -198,7 +198,6 @@ void URpgAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData&
 	/* Source = Causer of the Effect & Target = Target of the Effect (Owner of this AttributeSet). */
 
 	Props.EffectContextHandle = Data.EffectSpec.GetContext();
-
 	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 
 	if (IsValid(Props.SourceASC) && Props.SourceASC->AbilityActorInfo.IsValid() && Props.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
