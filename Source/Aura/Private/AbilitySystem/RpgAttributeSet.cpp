@@ -4,6 +4,7 @@
 #include "AbilitySystem/RpgAttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
+#include "AbilitySystem/RpgAbilitySystemLibrary.h"
 #include "Player/RpgPlayerController.h"
 #include "Interfaces/CombatInterface.h"
 #include "GameFramework/Character.h"
@@ -177,18 +178,20 @@ void URpgAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
 
-			ShowFloatingText(Props, LocalIncomingDamage);
+			const bool bBlock = URpgAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
+			const bool bCriticalHit = URpgAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+			ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
 		}
 	}
 }
 
-void URpgAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage) const
+void URpgAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
 		if (ARpgPlayerController* PC = Cast<ARpgPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
 		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter);
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
 	}
 }

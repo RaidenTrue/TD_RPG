@@ -7,6 +7,7 @@
 #include "RpgGameplayTags.h"
 #include "AbilitySystem/RpgAttributeSet.h"
 #include "Interfaces/CombatInterface.h"
+#include "RpgAbilityTypes.h"
 #include "AbilitySystem/RpgAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 
@@ -83,8 +84,17 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvaluationParameters, TargetBlockChance);
 	TargetBlockChance = FMath::Max<float>(TargetBlockChance, 0.f);
 
-	/* If Block, Halve the Damage. */
 	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
+
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+
+	URpgAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
+
+	/*FGameplayEffectContext* Context = EffectContextHandle.Get();
+	FRpgGameplayEffectContext* RpgContext = static_cast<FRpgGameplayEffectContext*>(Context);
+	RpgContext->SetIsBlockedHit(bBlocked);*/
+
+	/* If Block, Halve the Damage. */
 	Damage = bBlocked ? Damage / 2.f : Damage;
 
 	
@@ -129,6 +139,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	/* CriticalHit Resistance reduces CriticalHitChance by a certain %. */
 	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;
 	const bool bCriticalHit = FMath::RandRange(1, 100) < EffectiveCriticalHitChance;
+
+	URpgAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
 
 	/* Double Damage + a Bonus if CriticalHit is true. */
 	Damage = bCriticalHit ? 2.f * Damage + SourceCriticalHitDamage : Damage;
