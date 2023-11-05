@@ -66,7 +66,10 @@ void AEnemyCharacter::BeginPlay()
 
 	InitAbilityActorInfo();
 
-	URpgAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	if (HasAuthority())
+	{
+		URpgAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	}
 
 	if (URpgUserWidget* RpgUserWidget = Cast<URpgUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -112,7 +115,10 @@ void AEnemyCharacter::InitAbilityActorInfo()
 
 	Cast<URpgAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
-	InitializeDefaultAttributes();
+	if (HasAuthority())
+	{
+		InitializeDefaultAttributes();
+	}
 }
 
 void AEnemyCharacter::InitializeDefaultAttributes() const

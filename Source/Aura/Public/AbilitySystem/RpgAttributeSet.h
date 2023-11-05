@@ -122,8 +122,6 @@ public:
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(URpgAttributeSet, IncomingDamage);
 
-
-
 	/* End Meta Attributes. */
 
 	/* Begin Secondary Attributes. */
@@ -169,6 +167,26 @@ public:
 	ATTRIBUTE_ACCESSORS(URpgAttributeSet, MaxMana);
 
 	/* End Secondary Attributes. */
+
+	/* Begin Resistance Attributes. */
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Player Resistance Attributes")
+	FGameplayAttributeData FireResistance;
+	ATTRIBUTE_ACCESSORS(URpgAttributeSet, FireResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningResistance, Category = "Player Resistance Attributes")
+	FGameplayAttributeData LightningResistance;
+	ATTRIBUTE_ACCESSORS(URpgAttributeSet, LightningResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArcaneResistance, Category = "Player Resistance Attributes")
+	FGameplayAttributeData ArcaneResistance;
+	ATTRIBUTE_ACCESSORS(URpgAttributeSet, ArcaneResistance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category = "Player Resistance Attributes")
+	FGameplayAttributeData PhysicalResistance;
+	ATTRIBUTE_ACCESSORS(URpgAttributeSet, PhysicalResistance);
+
+	/* End Resistance Attributes. */
 
 	/* Begin Primary Rep_Notify Functions. */
 
@@ -227,6 +245,24 @@ public:
 
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration);
+
+	/* End Secondary Attributes Rep_Notify. */
+
+	/* Begin Resistance Attributes Rep_Notify. */
+
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance);
+
+	UFUNCTION()
+	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance);
+
+	UFUNCTION()
+	void OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance);
+
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance);
+
+	/* End Resistance Attributes Rep_Notify. */
 
 private:
 

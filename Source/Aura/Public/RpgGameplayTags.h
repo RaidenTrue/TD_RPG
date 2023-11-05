@@ -52,16 +52,21 @@ public:
 
 	FGameplayTag Attributes_Secondary_MaxMana;
 
+	/* Resistance Gameplay Tags. */
+
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Lightning;
+	FGameplayTag Attributes_Resistance_Arcane;
+
+	FGameplayTag Attributes_Resistance_Physical;
+
 	/* Input Gameplay Tags. */
 
 	FGameplayTag InputTag_LMB;
-
 	FGameplayTag InputTag_RMB;
 
 	FGameplayTag InputTag_1;
-
 	FGameplayTag InputTag_2;
-
 	FGameplayTag InputTag_3;
 
 	FGameplayTag InputTag_4;
@@ -69,6 +74,16 @@ public:
 	/* General Attributes. */
 
 	FGameplayTag Damage;
+
+	FGameplayTag Damage_Fire;
+	FGameplayTag Damage_Lightning;
+	FGameplayTag Damage_Arcane;
+
+	FGameplayTag Damage_Physical;
+
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
+
+	TArray<FGameplayTag> DamageTypes;
 
 	FGameplayTag Effects_HitReact;
 

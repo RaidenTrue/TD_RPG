@@ -55,6 +55,8 @@ void ARpgProjectile::Destroyed()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+
+		if (TrailLoopSoundComponent) TrailLoopSoundComponent->Stop();
 	}
 
 	Super::Destroyed();
@@ -68,10 +70,15 @@ void ARpgProjectile::OnSphereOverlap(
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor) { return; }
 
-	TrailLoopSoundComponent->Stop();
+	if (!bHit)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+	}
+
+	if (TrailLoopSoundComponent) TrailLoopSoundComponent->Stop();
 
 	if (HasAuthority())
 	{

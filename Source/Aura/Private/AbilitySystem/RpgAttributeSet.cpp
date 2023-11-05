@@ -58,6 +58,16 @@ URpgAttributeSet::URpgAttributeSet()
 
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
 
+	/* Resistance Attributes. */
+
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Fire, GetFireResistanceAttribute);
+
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Lightning, GetLightningResistanceAttribute);
+
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Arcane, GetArcaneResistanceAttribute);
+
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Physical, GetPhysicalResistanceAttribute);
+
 	/*FunctionPointer = GetIntelligenceAttribute;
 	FGameplayAttribute Attribute = FunctionPointer();*/
 
@@ -107,6 +117,16 @@ void URpgAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+
+	/* Resistance Attributes. */
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, FireResistance, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, LightningResistance, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, ArcaneResistance, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(URpgAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
 
 }
 
@@ -189,7 +209,8 @@ void URpgAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Da
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
-		if (ARpgPlayerController* PC = Cast<ARpgPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		
+		if (ARpgPlayerController* PC = Cast<ARpgPlayerController>(Props.SourceCharacter->Controller))
 		{
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
@@ -319,5 +340,25 @@ void URpgAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& Ol
 void URpgAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, ManaRegeneration, OldManaRegeneration);
+}
+
+void URpgAttributeSet::OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, FireResistance, OldFireResistance);
+}
+
+void URpgAttributeSet::OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, LightningResistance, OldLightningResistance);
+}
+
+void URpgAttributeSet::OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, ArcaneResistance, OldArcaneResistance);
+}
+
+void URpgAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(URpgAttributeSet, PhysicalResistance, OldPhysicalResistance);
 }
 

@@ -13,5 +13,17 @@ UCLASS()
 class AURA_API URpgDamageGameplayAbility : public URpgGameplayAbility
 {
 	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
+
+	/* Removed due to Mapping out Damage in DamageTypes. */
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Damage)
+	//FScalableFloat Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Damage)
+	TMap<FGameplayTag, FScalableFloat> DamageTypes;
 	
 };
