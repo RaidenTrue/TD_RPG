@@ -2,14 +2,19 @@
 
 
 #include "Character/EnemyCharacter.h"
+#include "Aura/Aura.h"
 #include "RpgGameplayTags.h"
+#include "AI/RpgAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Components/WidgetComponent.h"
 #include "AbilitySystem/RpgAttributeSet.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "AbilitySystem/RpgAbilitySystemLibrary.h"
-#include "UI/Widget/RpgUserWidget.h"
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
-#include "Aura/Aura.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "UI/Widget/RpgUserWidget.h"
+
+
 
 AEnemyCharacter::AEnemyCharacter()
 {
@@ -23,6 +28,18 @@ AEnemyCharacter::AEnemyCharacter()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+}
+
+void AEnemyCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (!HasAuthority()) { return; }
+
+	RpgAIController = Cast<ARpgAIController>(NewController);
+
+	RpgAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	RpgAIController->RunBehaviorTree(BehaviorTree);
 }
 
 void AEnemyCharacter::HighlightActor()
