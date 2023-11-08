@@ -211,31 +211,31 @@ void ARpgPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		GetASC()->AbilityInputTagReleased(InputTag);
 	}
 
-	if (!bTargetting && !bShiftKeyDown)
-	{
-		const APawn* ControlledPawn = GetPawn();
-		if (FollowTime <= ShortPressThreshold && ControlledPawn)
-		{
-			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
-			{
-				Spline->ClearSplinePoints();
+	//if (!bTargetting && !bShiftKeyDown)
+	//{
+	//	const APawn* ControlledPawn = GetPawn();
+	//	if (FollowTime <= ShortPressThreshold && ControlledPawn)
+	//	{
+	//		if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+	//		{
+	//			Spline->ClearSplinePoints();
 
-				for (const FVector& PointLoc : NavPath->PathPoints)
-				{
-					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+	//			for (const FVector& PointLoc : NavPath->PathPoints)
+	//			{
+	//				Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
 
-					//DrawDebugSphere(GetWorld(), PointLoc, 10.f, 8, FColor::Green, false, 5.f);
-				}
+	//				//DrawDebugSphere(GetWorld(), PointLoc, 10.f, 8, FColor::Green, false, 5.f);
+	//			}
 
-				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
-				bAutoRunning = true;
-			}
-		}
+	//			CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+	//			bAutoRunning = true;
+	//		}
+	//	}
 
-		FollowTime = 0.f;
+	//	FollowTime = 0.f;
 
-		bTargetting = false;
-	}
+	//	bTargetting = false;
+	//}
 	/*GEngine->AddOnScreenDebugMessage(2, 10.f, FColor::Green, *InputTag.ToString());*/
 }
 

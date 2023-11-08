@@ -27,7 +27,7 @@ void UBTService_FindNearestTarget::TickNode(UBehaviorTreeComponent& OwnerComp, u
 
 	for (AActor* Actor : ActorsWithTag)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, *Actor->GetName());
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, *Actor->GetName());*/
 
 		if (IsValid(Actor) && IsValid(OwningPawn))
 		{

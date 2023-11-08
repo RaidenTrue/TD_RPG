@@ -28,6 +28,12 @@ AEnemyCharacter::AEnemyCharacter()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
 
 void AEnemyCharacter::PossessedBy(AController* NewController)
@@ -40,6 +46,10 @@ void AEnemyCharacter::PossessedBy(AController* NewController)
 
 	RpgAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	RpgAIController->RunBehaviorTree(BehaviorTree);
+
+	RpgAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	RpgAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
+
 }
 
 void AEnemyCharacter::HighlightActor()
@@ -124,6 +134,9 @@ void AEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 N
 	bHitReacting = NewCount > 0;
 
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+
+	RpgAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), true);
+
 }
 
 void AEnemyCharacter::InitAbilityActorInfo()
