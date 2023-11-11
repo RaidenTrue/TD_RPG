@@ -85,6 +85,16 @@ void AEnemyCharacter::Killed()
 	Super::Killed();
 }
 
+void AEnemyCharacter::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
+AActor* AEnemyCharacter::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
+}
+
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -95,7 +105,7 @@ void AEnemyCharacter::BeginPlay()
 
 	if (HasAuthority())
 	{
-		URpgAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+		URpgAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
 	}
 
 	if (URpgUserWidget* RpgUserWidget = Cast<URpgUserWidget>(HealthBar->GetUserWidgetObject()))
@@ -135,8 +145,10 @@ void AEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 N
 
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 
-	RpgAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), true);
-
+	if (RpgAIController && RpgAIController->GetBlackboardComponent())
+	{
+		RpgAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), true);
+	}
 }
 
 void AEnemyCharacter::InitAbilityActorInfo()

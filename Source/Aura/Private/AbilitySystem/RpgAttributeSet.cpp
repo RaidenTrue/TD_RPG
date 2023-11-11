@@ -213,6 +213,12 @@ void URpgAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Da
 		if (ARpgPlayerController* PC = Cast<ARpgPlayerController>(Props.SourceCharacter->Controller))
 		{
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
+			return;
+		}
+
+		if (ARpgPlayerController* PC = Cast<ARpgPlayerController>(Props.TargetCharacter->Controller))
+		{
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
 	}
 }

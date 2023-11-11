@@ -27,12 +27,21 @@ public:
 
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
+	/* Begin Combat Interface. */
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual FVector GetCombatSocketLocation_Implementation() override;
+	virtual AActor* GetAvatar_Implementation() override;
 
 	virtual void Killed() override;
+	virtual bool IsKilled_Implementation() const override;
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation();
+	/* End Combat Interface. */
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleKill();
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TArray<FTaggedMontage> AttackMontages;
 
 protected:
 	// Called when the game starts or when spawned
@@ -46,7 +55,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	FName WeaponTipSocketName;
 
-	virtual FVector GetCombatSocketLocation() override;
+	bool bKilled = false;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

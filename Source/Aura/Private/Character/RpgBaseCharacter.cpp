@@ -43,6 +43,16 @@ void ARpgBaseCharacter::Killed()
 	MulticastHandleKill();
 }
 
+bool ARpgBaseCharacter::IsKilled_Implementation() const
+{
+	return bKilled;
+}
+
+TArray<FTaggedMontage> ARpgBaseCharacter::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
 void ARpgBaseCharacter::MulticastHandleKill_Implementation()
 {
 	Weapon->SetSimulatePhysics(true);
@@ -59,6 +69,8 @@ void ARpgBaseCharacter::MulticastHandleKill_Implementation()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	Dissolve();
+
+	bKilled = true;
 }
 
 // Called when the game starts or when spawned
@@ -73,11 +85,16 @@ void ARpgBaseCharacter::InitAbilityActorInfo()
 
 }
 
-FVector ARpgBaseCharacter::GetCombatSocketLocation()
+FVector ARpgBaseCharacter::GetCombatSocketLocation_Implementation()
 {
 	check(Weapon);
 
 	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
+AActor* ARpgBaseCharacter::GetAvatar_Implementation()
+{
+	return this;
 }
 
 void ARpgBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const
