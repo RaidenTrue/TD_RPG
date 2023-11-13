@@ -5,6 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
+#include "RpgGameplayTags.h"
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
 
 // Sets default values
@@ -85,11 +86,29 @@ void ARpgBaseCharacter::InitAbilityActorInfo()
 
 }
 
-FVector ARpgBaseCharacter::GetCombatSocketLocation_Implementation()
+FVector ARpgBaseCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	check(Weapon);
+	/*check(Weapon);*/
+	/* TODO: return correct Socket based on MontageTag. */
+	const FRpgGameplayTags& GameplayTags = FRpgGameplayTags::Get();
 
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon) && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponTipSocketName);
+	}
+
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand))
+	{
+		return GetMesh()->GetSocketLocation(RightHandSocketName);
+	}
+
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LeftHand))
+	{
+		return GetMesh()->GetSocketLocation(LeftHandSocketName);
+	}
+
+	return FVector();
+	
 }
 
 AActor* ARpgBaseCharacter::GetAvatar_Implementation()
