@@ -8,6 +8,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/AudioComponent.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/RpgAbilitySystemLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -71,6 +72,8 @@ void ARpgProjectile::OnSphereOverlap(
 	const FHitResult& SweepResult)
 {
 	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor) { return; }
+
+	if (!URpgAbilitySystemLibrary::IsNotFriend(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor)) { return; }
 
 	if (!bHit)
 	{
