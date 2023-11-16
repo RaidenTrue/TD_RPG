@@ -12,6 +12,7 @@ class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
 class UAnimMontage;
+class UNiagaraSystem;
 class UAbilitySystemComponent;
 
 UCLASS()
@@ -35,6 +36,9 @@ public:
 	virtual void Killed() override;
 	virtual bool IsKilled_Implementation() const override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation();
+
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 	/* End Combat Interface. */
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -101,6 +105,9 @@ protected:
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
 	/* End Dissolve Effects. */
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UNiagaraSystem* BloodEffect;
 
 private:
 

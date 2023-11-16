@@ -82,6 +82,11 @@ void AEnemyCharacter::Killed()
 {
 	SetLifeSpan(LifeSpan);
 
+	if (RpgAIController)
+	{
+		RpgAIController->GetBlackboardComponent()->SetValueAsBool(FName("Killed"), true);
+	}
+	
 	Super::Killed();
 }
 
