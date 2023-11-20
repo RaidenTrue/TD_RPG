@@ -58,6 +58,8 @@ void ARpgProjectile::Destroyed()
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 
 		if (TrailLoopSoundComponent) TrailLoopSoundComponent->Stop();
+
+		bHit = true;
 	}
 
 	Super::Destroyed();
@@ -79,9 +81,10 @@ void ARpgProjectile::OnSphereOverlap(
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-	}
 
-	if (TrailLoopSoundComponent) TrailLoopSoundComponent->Stop();
+		if (TrailLoopSoundComponent) TrailLoopSoundComponent->Stop();
+		bHit = true;
+	}
 
 	if (HasAuthority())
 	{

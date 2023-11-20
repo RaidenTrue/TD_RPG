@@ -137,6 +137,9 @@ void FRpgGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.CombatSocket_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("CombatSocket.LeftHand"), FString("Combat Socket Left Hand Montage."));
 
+	GameplayTags.CombatSocket_Tail = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("CombatSocket.Tail"), FString("Combat Socket for Tail Attack."));
+
 	/* End Combat Socket Tags. */
 
 	/* Begin Montage Tags. */

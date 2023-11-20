@@ -6,6 +6,7 @@
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "RpgGameplayTags.h"
+#include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
 
 // Sets default values
@@ -74,6 +75,8 @@ FTaggedMontage ARpgBaseCharacter::GetTaggedMontageByTag_Implementation(const FGa
 
 void ARpgBaseCharacter::MulticastHandleKill_Implementation()
 {
+	UGameplayStatics::PlaySoundAtLocation(this, KilledSound, GetActorLocation(), GetActorRotation());
+
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -123,6 +126,11 @@ FVector ARpgBaseCharacter::GetCombatSocketLocation_Implementation(const FGamepla
 	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_LeftHand))
 	{
 		return GetMesh()->GetSocketLocation(LeftHandSocketName);
+	}
+
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Tail))
+	{
+		return GetMesh()->GetSocketLocation(TailSocketName);
 	}
 
 	return FVector();
