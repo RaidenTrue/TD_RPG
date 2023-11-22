@@ -124,7 +124,10 @@ void FRpgGameplayTags::InitializeNativeGameplayTags()
 		FName("Effects.HitReact"), FString("Tag granted when Hit Reacting."));
 
 	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Attack"), FString("Ability Attack"));
+		FName("Abilities.Attack"), FString("Attack Ability Tag."));
+
+	GameplayTags.Abilities_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Summon"), FString("Summon Ability Tag."));
 
 	/* Begin Combat Socket Tags. */
 
