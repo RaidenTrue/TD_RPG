@@ -78,6 +78,11 @@ int32 ARpgBaseCharacter::GetMinionCount_Implementation()
 	return MinionCount;
 }
 
+void ARpgBaseCharacter::IncrementMinionCount_Implementation(int32 Amount)
+{
+	MinionCount += Amount;
+}
+
 void ARpgBaseCharacter::MulticastHandleKill_Implementation()
 {
 	UGameplayStatics::PlaySoundAtLocation(this, KilledSound, GetActorLocation(), GetActorRotation());

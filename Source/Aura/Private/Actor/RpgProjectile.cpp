@@ -82,6 +82,8 @@ void ARpgProjectile::OnSphereOverlap(
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 
+		//UE_LOG(LogTemp, Warning, TEXT("[%s] Spawned"), *GetName());
+
 		if (TrailLoopSoundComponent) TrailLoopSoundComponent->Stop();
 		bHit = true;
 	}
