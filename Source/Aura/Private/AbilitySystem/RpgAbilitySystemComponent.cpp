@@ -4,6 +4,7 @@
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
 
 #include "AbilitySystem/Abilities/RpgGameplayAbility.h"
+#include "Aura/RpgLogChannels.h"
 #include "RpgGameplayTags.h"
 
 void URpgAbilitySystemComponent::AbilityActorInfoSet()
@@ -34,6 +35,9 @@ void URpgAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<
 
 		/*GiveAbilityAndActivateOnce(AbilitySpec);*/
 	}
+
+	bStartupAbilitiesGiven = true;
+	AbilitiesGivenDelegate.Broadcast(this);
 }
 
 void URpgAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
@@ -64,6 +68,60 @@ void URpgAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inp
 		{
 			AbilitySpecInputReleased(AbilitySpec);
 		}
+	}
+}
+
+void URpgAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate)
+{
+	/* Adding this to Lock the Ability as the Abilities tend to change status & could be no longer Activatable. */
+	FScopedAbilityListLock ActiveScopeLock(*this);
+
+	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if (!Delegate.ExecuteIfBound(AbilitySpec))
+		{
+			UE_LOG(LogRpg, Error, TEXT("Failed to Execute Delegate in %hs"), __FUNCTION__);
+		}
+	}
+}
+
+FGameplayTag URpgAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Ability)
+	{
+		for (FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities"))))
+			{
+				return Tag;
+			}
+		}
+	}
+
+	return FGameplayTag();
+}
+
+FGameplayTag URpgAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	for (FGameplayTag Tag : AbilitySpec.DynamicAbilityTags)
+	{
+		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("InputTag"))))
+		{
+			return Tag;
+		}
+	}
+
+	return FGameplayTag();
+}
+
+void URpgAbilitySystemComponent::OnRep_ActivateAbilities()
+{
+	Super::OnRep_ActivateAbilities();
+
+	if (!bStartupAbilitiesGiven)
+	{
+		bStartupAbilitiesGiven = true;
+		AbilitiesGivenDelegate.Broadcast(this);
 	}
 }
 

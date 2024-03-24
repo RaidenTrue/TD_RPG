@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
+//#include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/RpgAttributeSet.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
@@ -52,25 +53,52 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
-	Cast<URpgAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda([this](const FGameplayTagContainer& AssetTags)
+	if (URpgAbilitySystemComponent* RpgASC = Cast<URpgAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		if (RpgASC->bStartupAbilitiesGiven)
 		{
-			for (const FGameplayTag& Tag : AssetTags)
-			{
-				/* For example: Tag = Mesasge.HealthPotion */
-				/* "Message.HealthPotion".MatchesTag("Message") will return True, "Message".MatchesTag("Message.HealthPotion") will return False. */
-				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
-
-				if (Tag.MatchesTag(MessageTag))
-				{
-					const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
-
-					MessageWidgetRowDelegate.Broadcast(*Row);
-				}
-
-				/*const FString Msg = FString::Printf(TEXT("GE Tag: %s"), *Tag.ToString());
-
-				GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, Msg);*/
-			}
+			OnInitializeStartupAbilities(RpgASC);
 		}
-	);
+		else
+		{
+			RpgASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::OnInitializeStartupAbilities);
+		}
+
+		RpgASC->EffectAssetTags.AddLambda([this](const FGameplayTagContainer& AssetTags)
+			{
+				for (const FGameplayTag& Tag : AssetTags)
+				{
+					FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
+
+					if (Tag.MatchesTag(MessageTag))
+					{
+						const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+
+						MessageWidgetRowDelegate.Broadcast(*Row);
+					}
+				}
+			}
+		);
+	}
+}
+
+void UOverlayWidgetController::OnInitializeStartupAbilities(URpgAbilitySystemComponent* RpgAbilitySystemComponent)
+{
+	/* TODO: Get Information about all given Abilities, look up their AbilityInfo & Broadcast it to Widgets. */
+
+	if (!RpgAbilitySystemComponent->bStartupAbilitiesGiven) { return; }
+
+	FForEachAbility BroadcastDelegate;
+
+	BroadcastDelegate.BindLambda([this, RpgAbilitySystemComponent](const FGameplayAbilitySpec& AbilitySpec)
+	{
+			/* TODO: Need a way to figure out the AbilityTag for a given AbilitySpec. */
+			FRpgAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(RpgAbilitySystemComponent->GetAbilityTagFromSpec(AbilitySpec));
+
+			Info.InputTag = RpgAbilitySystemComponent->GetInputTagFromSpec(AbilitySpec);
+
+			AbilityInfoDelegate.Broadcast(Info);
+	});
+
+	RpgAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
 }
