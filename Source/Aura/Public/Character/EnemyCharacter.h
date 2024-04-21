@@ -6,7 +6,6 @@
 #include "Character/RpgBaseCharacter.h"
 #include "Interfaces/EnemyInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
-#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "EnemyCharacter.generated.h"
 
 class UWidgetComponent;
@@ -79,8 +78,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Class Defaults")
 	int32 Level = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Class Defaults")
-	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;

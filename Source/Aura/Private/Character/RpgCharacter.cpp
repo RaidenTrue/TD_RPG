@@ -30,6 +30,8 @@ ARpgCharacter::ARpgCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	CharacterClass = ECharacterClass::Elementalist;
 }
 
 void ARpgCharacter::PossessedBy(AController* NewController)

@@ -59,6 +59,7 @@ public:
 	FGameplayTag Attributes_Resistance_Arcane;
 
 	FGameplayTag Attributes_Resistance_Physical;
+	FGameplayTag Attributes_Meta_IncomingXP;
 
 	/* Input Gameplay Tags. */
 

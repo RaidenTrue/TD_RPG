@@ -5,6 +5,8 @@
 #include "AbilitySystem/RpgAbilitySystemComponent.h"
 //#include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/RpgAttributeSet.h"
+#include "Player/RpgPlayerState.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -17,10 +19,15 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnManaChanged.Broadcast(RpgAttributeSet->GetMana());
 
 	OnMaxManaChanged.Broadcast(RpgAttributeSet->GetMaxMana());
+
+
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
+	ARpgPlayerState* RpgPlayerState = CastChecked<ARpgPlayerState>(PlayerState);
+	RpgPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
+
 	const URpgAttributeSet* RpgAttributeSet = CastChecked<URpgAttributeSet>(AttributeSet);
 
 	/* Refactored Implementation with Lambdas - No FunctionCallback. */
@@ -101,4 +108,28 @@ void UOverlayWidgetController::OnInitializeStartupAbilities(URpgAbilitySystemCom
 	});
 
 	RpgAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
+}
+
+void UOverlayWidgetController::OnXPChanged(int32 NewXP) const
+{
+	const ARpgPlayerState* RpgPlayerState = CastChecked<ARpgPlayerState>(PlayerState);
+	const ULevelUpInfo* LevelUpInfo = RpgPlayerState->LevelUpInfo;
+
+	checkf(LevelUpInfo, TEXT("Unable to find LevelUpInfo. Please fill out RpgPlayerState Blueprint."));
+	
+	const int32 Level = LevelUpInfo->FindLevelForXP(NewXP);
+	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
+
+	if (Level <= MaxLevel && Level > 0)
+	{
+		const int32 LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
+		const int32 PreviousLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level - 1].LevelUpRequirement;
+
+		const int32 DeltaLevelRequirement = LevelUpRequirement - PreviousLevelUpRequirement;
+		const int32 XPForThisLevel = NewXP - PreviousLevelUpRequirement;
+
+		const float XPBarPercent = static_cast<float>(XPForThisLevel) / (DeltaLevelRequirement);
+
+		OnXPPercentChangedDelegate.Broadcast(XPBarPercent);
+	}
 }
