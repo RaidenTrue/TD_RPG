@@ -99,13 +99,19 @@ void URpgAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextO
 
 	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.StartupAbilities)
 	{
+		if (ASC->GetAvatarActor()->Implements<UCombatInterface>())
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, ICombatInterface::Execute_GetPlayerLevel(ASC->GetAvatarActor()));
 
-		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor()))
+			ASC->GiveAbility(AbilitySpec);
+		}
+
+		/*if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor()))
 		{
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetPlayerLevel());
 
 			ASC->GiveAbility(AbilitySpec);
-		}
+		}*/
 	}
 }
 

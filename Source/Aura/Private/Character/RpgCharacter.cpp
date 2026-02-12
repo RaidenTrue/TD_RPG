@@ -52,7 +52,20 @@ void ARpgCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
-int32 ARpgCharacter::GetPlayerLevel()
+void ARpgCharacter::AddToXP_Implementation(int32 InXP)
+{
+	ARpgPlayerState* RpgPlayerState = GetPlayerState<ARpgPlayerState>();
+	check(RpgPlayerState);
+
+	RpgPlayerState->AddToXP(InXP);
+}
+
+void ARpgCharacter::LevelUp_Implementation()
+{
+
+}
+
+int32 ARpgCharacter::GetPlayerLevel_Implementation()
 {
 	const ARpgPlayerState* RpgPlayerState = GetPlayerState<ARpgPlayerState>();
 

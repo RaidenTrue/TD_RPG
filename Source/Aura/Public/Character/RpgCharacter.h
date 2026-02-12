@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/RpgBaseCharacter.h"
+#include "Aura/Public/Interfaces/PlayerInterface.h"
 #include "RpgCharacter.generated.h"
 
 class ARpgPlayerState;
@@ -14,7 +15,7 @@ class UCameraComponent;
  * 
  */
 UCLASS()
-class AURA_API ARpgCharacter : public ARpgBaseCharacter
+class AURA_API ARpgCharacter : public ARpgBaseCharacter, public IPlayerInterface
 {
 	GENERATED_BODY()
 
@@ -26,9 +27,16 @@ public:
 
 	virtual void OnRep_PlayerState() override;
 
+	/* Player Interface. */
+
+	virtual void AddToXP_Implementation(int32 InXP) override;
+	virtual void LevelUp_Implementation() override;
+
+	/* End Player Interface. */
+
 	/* Begin Combat Interface. */
 
-	virtual int32 GetPlayerLevel() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 
 	/* End Combat Interface. */
 
