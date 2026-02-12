@@ -5,10 +5,12 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/RpgAbilitySystemLibrary.h"
+#include "Interfaces/PlayerInterface.h"
 #include "Player/RpgPlayerController.h"
 #include "Interfaces/CombatInterface.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Aura/RpgLogChannels.h"
 #include "Net/UnrealNetwork.h"
 #include "RpgGameplayTags.h"
 
@@ -189,6 +191,8 @@ void URpgAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 				{
 					CombatInterface->Killed();
 				}
+
+				SendXPEvent(Props);
 			}
 			else
 			{
@@ -201,6 +205,21 @@ void URpgAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 			const bool bBlock = URpgAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 			const bool bCriticalHit = URpgAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 			ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCriticalHit);
+		}
+	}
+
+	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
+	{
+		const float LocalIncomingXP = GetIncomingXP();
+		SetIncomingXP(0.f);
+
+		/*UE_LOG(LogRpg, Log, TEXT("Incoming XP: %f"), LocalIncomingXP);*/
+
+		// TODO: See if we Should Level Up.
+
+		if (Props.SourceCharacter->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
 		}
 	}
 }
@@ -221,6 +240,42 @@ void URpgAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Da
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
 	}
+}
+
+void URpgAttributeSet::SendXPEvent(const FEffectProperties& Props)
+{
+	/* Refactor / Optimized Implementation. */
+	if (Props.TargetCharacter->Implements<UCombatInterface>())
+	{
+		const int32 TargetLevel = ICombatInterface::Execute_GetPlayerLevel(Props.TargetCharacter);
+		const ECharacterClass TargetClass = ICombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
+
+		const int32 XPReward = URpgAbilitySystemLibrary::GetXPRewardForClassAndLevel(Props.TargetCharacter, TargetClass, TargetLevel);
+
+		const FRpgGameplayTags& GameplayTags = FRpgGameplayTags::Get();
+		FGameplayEventData Payload;
+
+		Payload.EventTag = GameplayTags.Attributes_Meta_IncomingXP;
+		Payload.EventMagnitude = XPReward;
+
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attributes_Meta_IncomingXP, Payload);
+	}
+
+	/*if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetCharacter))
+	{
+		const int32 TargetLevel = CombatInterface->GetPlayerLevel();
+		const ECharacterClass TargetClass = ICombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
+
+		const int32 XPReward = URpgAbilitySystemLibrary::GetXPRewardForClassAndLevel(Props.TargetCharacter, TargetClass, TargetLevel);
+
+		const FRpgGameplayTags& GameplayTags = FRpgGameplayTags::Get();
+		FGameplayEventData Payload;
+
+		Payload.EventTag = GameplayTags.Attributes_Meta_IncomingXP;
+		Payload.EventMagnitude = XPReward;
+
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attributes_Meta_IncomingXP, Payload);
+	}*/
 }
 
 void URpgAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const

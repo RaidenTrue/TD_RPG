@@ -96,6 +96,14 @@ void FRpgGameplayTags::InitializeNativeGameplayTags()
 
 	/* Damage Resistances. */
 
+	/* Meta Attributes. */
+
+	GameplayTags.Attributes_Meta_IncomingXP = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Meta.IncomingXP"), FString("Incoming XP Meta Attribute")
+	);
+
+	/* End Meta Attributes. */
+
 	GameplayTags.Attributes_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Resistance.Fire"), FString("Resistance to Fire Damage."));
 

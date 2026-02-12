@@ -83,6 +83,11 @@ void ARpgBaseCharacter::IncrementMinionCount_Implementation(int32 Amount)
 	MinionCount += Amount;
 }
 
+ECharacterClass ARpgBaseCharacter::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
+}
+
 void ARpgBaseCharacter::MulticastHandleKill_Implementation()
 {
 	UGameplayStatics::PlaySoundAtLocation(this, KilledSound, GetActorLocation(), GetActorRotation());
@@ -183,6 +188,7 @@ void ARpgBaseCharacter::AddCharacterAbilities()
 	if (!HasAuthority()) { return; }
 
 	RpgASC->AddCharacterAbilities(StartupAbilities);
+	RpgASC->AddCharacterPassiveAbilities(StartupPassiveAbilities);
 }
 
 void ARpgBaseCharacter::Dissolve()

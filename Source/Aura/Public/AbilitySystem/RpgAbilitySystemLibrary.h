@@ -53,4 +53,6 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Rpg Ability System Library|Gameplay Effects")
 	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);
+
+	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 CharacterLevel);
 };
